@@ -1,0 +1,78 @@
+.btn-margin {
+  margin: 7px 3px;
+  /*margin-bottom: 70px;*/
+}
+
+.btn-margin:hover {
+  background-color: #bdd4f9;
+  border-width: 0.5px;
+  border-radius: 5px;
+}
+
+.insp-home {
+  text-align: center;
+  margin-top: 70px;
+}
+
+/*.insp-home:hover {
+  color: red;
+}*/
+/*
+a {
+  text-decoration: none;
+  color: black;
+}*/
+
+/*div
+{
+	display:table-cell;
+	text-align:center;
+	vertical-align:middle;
+}*/
+
+.buzz {
+  margin-top: -15px;
+  left: auto;
+  text-align: center;
+  font-size: 50px;
+  font-family: Roboto;
+	display:inline-block;
+	position:relative;
+	color:inherit;
+	text-decoration:none;
+	transition:all 250ms ease;
+	transform:translatez(0);
+	perspective:50px;
+}
+
+.buzz:before,
+.buzz:after
+{
+	content:attr( data-buzz );
+	position:absolute;
+	z-index:-1;
+	opacity:0.5;
+	transition:all 150ms ease;
+}
+
+.buzz:before
+{
+	color:#00d5ff;
+	top:2px; left:2px;
+}
+
+.buzz:after
+{
+	color:#ffaa00;
+	bottom:2px; right:2px;
+}
+
+.buzz:hover:before
+{
+	transform:rotatex(-15deg) rotatey(5deg) scale(1.25);
+}
+
+.buzz:hover:after
+{
+	transform:rotatey(-5deg) rotatex(15deg) scale(1.25);
+}
