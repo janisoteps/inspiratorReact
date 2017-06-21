@@ -4,6 +4,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 // Needed for onTouchTap
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
+import axios from 'axios';
 
 class Generator extends Component {
   constructor(props) {
@@ -29,14 +30,23 @@ class Generator extends Component {
 
   // when recipe accepted get the ID of the recipe from onclick and set the path to the recipe route and then add recipe id to user profile
   recYes(id){
-    const recipePath = 'recipe/'+id;
-    console.log(recipePath);
-
-    console.log(this.props.user[0]);
+    let recipePath = 'recipe/'+id;
+    let recipeName = this.props.recipe.title;
+    // console.log(recipePath, recipeName);
+    // console.log(this.props.user[0]);
     let userId = this.props.user[0]._id;
-    console.log(userId);
-    //
-    // this.goTo(recipePath);
+    // console.log(userId);
+
+    axios.put('http://localhost:3001/api/users', {
+      id: userId,
+      recId: id,
+      recName: recipeName
+    }).then(res => {
+      console.log(res.data);
+      // this.setState({ data: res.data });
+    });
+
+    this.goTo(recipePath);
   }
 
 

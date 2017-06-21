@@ -27,18 +27,22 @@ export const makeMainRoutes = () => {
            url='http://localhost:3001/api/comments'
            pollInterval={10000} />}
          />
+
         <Route path="/home" render={(props) => <Home auth={auth} {...props} />} />
+
         <Route path="/callback" render={(props) => {
           handleAuthentication(props);
           return <Callback {...props} />
         }}/>
+
         <Route path="/profile" render={(props) => (
             !auth.isAuthenticated() ? (
               <Redirect to="/"/>
             ) : (
-              <Profile auth={auth} {...props} />
+              <Profile history={history} auth={auth} {...props} />
             )
           )} />
+
           <Route path="/recipe/:id" render={(props) => (
               !auth.isAuthenticated() ? (
                 <Redirect to="/"/>

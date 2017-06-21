@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import style from './style';
+import List from 'material-ui/List';
+import FontIcon from 'material-ui/FontIcon';
+// import RaisedButton from 'material-ui/RaisedButton';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 class Recipe extends Component {
   render() {
@@ -12,22 +16,27 @@ class Recipe extends Component {
         </div>
       )
     }
-
+    //map the ingredients array to a list of ingredients
     let ingredients = this.props.recipe.ingredients.map(ingredient => {
       return (
         <div key={ ingredient }>
-          <p>{ingredient}</p>
+          <p><FontIcon className="material-icons">local_grocery_store</FontIcon> {ingredient}</p>
         </div>
       )});
 
     return(
-      <div>
-        <div style={ style.recipeTitle }>
-          <h1> { recipeTitle } </h1>
-          <img src={ recipeImage } alt="Recipe"></img>
+      <MuiThemeProvider>
+        <div>
+          <div style={ style.recipeTitle }>
+            <h1> { recipeTitle } </h1>
+            <img src={ recipeImage } alt="Recipe"></img>
+          </div>
+          <List style={style.inspIngredients}>
+            <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Ingredients</h2>
+            { ingredients }
+          </List>
         </div>
-        { ingredients }
-      </div>
+      </MuiThemeProvider>
     )
   }
 }

@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import Login from './Login';
 import Header from './Header';
 import style from './style';
-// import Paper from 'material-ui/Paper';
+import {List, ListItem} from 'material-ui/List';
+import FontIcon from 'material-ui/FontIcon';
+import RaisedButton from 'material-ui/RaisedButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import CommentList from './CommentList';
@@ -50,27 +52,31 @@ class RecipePlan extends Component {
     } else {
       this.setState({ profile: userProfile });
     }
+    this.loadCommentsFromServer();
   }
 
-  componentDidMount() {
-    this.loadCommentsFromServer();
-    setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+  componentDidUpdate(){
+    console.log('updated');
   }
 
   loadCommentsFromServer() {
+    if (this.props.history.location.pathname === '/profile'){
+      return
+    }
     axios.get(this.props.url, { params: { recId: this.state.recipe._id } })
     .then(res => {
-     //  console.log(" res.data", res.data)
+      console.log('check');
       this.setState({ data: res.data });
-    })
+    });
+    // setInterval(this.loadCommentsFromServer, this.props.pollInterval);
   }
 
   handleCommentSubmit(comment) {
     //add POST request
     axios.post(this.props.url, comment)
     .then(res => {
-      console.log(res);
-      this.setState({ data: res.data });
+      // console.log(res);
+      // this.setState({ data: res.data });
     })
     .catch(err => {
       console.error(err);
@@ -87,9 +93,15 @@ class RecipePlan extends Component {
     }
     let ingredients = this.state.recipe.ingredients.map(ingredient => {
       return (
-        <div key={ ingredient }>
-          <p>{ingredient}</p>
-        </div>
+        // <div key={ ingredient }>
+        //   <p>{ingredient}</p>
+        // </div>
+        <ListItem
+          primaryText={ ingredient }
+          key={ ingredient }
+          leftIcon={<FontIcon className="material-icons">local_grocery_store</FontIcon>}>
+          <RaisedButton label="Got it" style={style.gotIngredient} />
+        </ListItem>
       )});
     // console.log(this.state.profile);
     return (
@@ -103,7 +115,10 @@ class RecipePlan extends Component {
                 <h1> { recipeTitle } </h1>
                 <img src={ recipeImage } alt="Recipe"></img>
               </div>
-              { ingredients }
+              <List style={style.recipeIngredients}>
+                <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Ingredients</h2>
+                { ingredients }
+              </List>
             </div>
           </div>
           <div style={ style.commentBox }>

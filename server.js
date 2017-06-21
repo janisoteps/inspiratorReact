@@ -50,7 +50,7 @@ router.get('/', function(req, res) {
 router.route('/comments')
  //retrieve all comments from the database
  .get(function(req, res) {
-   console.log(req.query.recId);
+  //  console.log(req.query.recId);
    //looks at our Comment Schema
    Comment.find({ recId: req.query.recId }).exec(function(err, comments) {
     if (err)
@@ -70,6 +70,7 @@ router.route('/comments')
    comment.save(function(err) {
      if (err)
      res.send(err);
+     res.send();
    });
  });
 
@@ -91,13 +92,13 @@ router.route('/recipes')
   .post(function(req, res) {
     var recipe = new Recipe();
     let id = req.body.recipeId;
-    console.log(id);
+    // console.log(id);
 
     var recipeUrl = "http://food2fork.com/api/get?key=19b9f7e3df065a89d6f1f874374989a3&rId="+id;
 
     request(recipeUrl, function (error, response, body) {
       if (!error && response.statusCode == 200) {
-        console.log(body);
+        // console.log(body);
         body = JSON.parse(body);
         recipe.image = body.recipe.image_url;
         recipe.ingredients = body.recipe.ingredients;
@@ -118,7 +119,7 @@ router.route('/recipes/:id')
   //retrieve the recipe from the database
   .get(function(req, res) {
     let recipeId = req.params.id;
-    console.log(recipeId);
+    // console.log(recipeId);
     //looks at our Comment Schema
     Recipe.find({_id:recipeId}).exec(function(err, recipe){
      if (err)
@@ -137,7 +138,7 @@ router.route('/users')
     User.find({ fbId: req.query.fbId }).exec(function(err, user) {
      if (err)
        res.send(err);
-     //responds with a json object of our database comments.
+     //responds with a json object
      res.json(user);
    });
   })
@@ -153,6 +154,17 @@ router.route('/users')
       res.send(err);
       res.json(user);
     });
+  })
+  .put(function(req, res){
+    let id = req.body.id;
+    let recId = req.body.recId;
+    let recName = req.body.recName;
+    User.update({ _id: id }, { $push: { recOwner: {recId: recId, recName: recName} }},function(err) {
+      if (err)
+      res.send(err);
+      res.send();
+    });
+    console.log('User updated - user ID:',id,' recipe ID:',recId,' recipe name:',recName);
   });
 
 //Use our router configuration when we call /api

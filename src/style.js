@@ -152,6 +152,25 @@ noContainer:{
   position: 'fixed',
   bottom: '15px',
   left: '5px'
+},
+profileRecOwn:{
+  height: '38vh',
+  overflow: 'scroll'
+},
+recipeIngredients:{
+  fontFamily:'Roboto'
+},
+inspIngredients:{
+  fontFamily:'Roboto',
+  marginLeft: '10vw'
+},
+gotIngredient:{
+  float: 'right',
+  marginTop: '-10px'
+},
+inspRecipe:{
+  position: 'relative',
+  zIndex: '-100'
 }
 }
 module.exports = style;

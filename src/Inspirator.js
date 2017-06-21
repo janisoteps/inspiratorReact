@@ -104,9 +104,10 @@ class Inspirator extends Component {
          <Header />
          <Login history={this.props.history} auth={this.props.auth}/>
          <div className="recipeGenerator">
-           <Generator user={this.state.user} history={this.props.history} recipe={ this.state.recipe } onRecGen={ this.handleRecipeGen } />
-           <Recipe recipe={ this.state.recipe }/>
+           <Recipe style={style.inspRecipe} recipe={ this.state.recipe }/>
+           {/* <Generator user={this.state.user} history={this.props.history} recipe={ this.state.recipe } onRecGen={ this.handleRecipeGen } /> */}
          </div>
+         <Generator user={this.state.user} history={this.props.history} recipe={ this.state.recipe } onRecGen={ this.handleRecipeGen } />
          <div style={style.blankFooter}></div>
        </div>
      </MuiThemeProvider>
