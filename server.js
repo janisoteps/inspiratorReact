@@ -15,6 +15,7 @@ var router = express.Router();
 var port = process.env.API_PORT || 3001;
 
 var request = require('request');
+var graph = require('fbgraph');
 
 
 mongoose.Promise = global.Promise;
@@ -74,7 +75,7 @@ router.route('/comments')
    });
  });
 
-//adding the /recipe route to our /api router
+//adding the /recipe route to our /api router - this will recieve an id for API call and save the response to database
 router.route('/recipes')
   //retrieve the recipe from the database
   // .get(function(req, res) {
@@ -88,7 +89,7 @@ router.route('/recipes')
   //    res.json(recipe);
   //   });
   // })
-  // Get the recipe from API and post it to database
+  // Get the recipe from API and post it to database reply back with recipe database ID
   .post(function(req, res) {
     var recipe = new Recipe();
     let id = req.body.recipeId;
@@ -100,10 +101,14 @@ router.route('/recipes')
       if (!error && response.statusCode == 200) {
         // console.log(body);
         body = JSON.parse(body);
+        // console.log(body);
         recipe.image = body.recipe.image_url;
         recipe.ingredients = body.recipe.ingredients;
+        let ingLength = recipe.ingredients.length;
+        recipe.ingCheck = new Array(ingLength).fill(0);
         recipe.directions = body.recipe.source_url;
         recipe.title = body.recipe.title;
+        recipe.socialRank = body.recipe.social_rank;
         recipe.save(function(err, model){
           if(err){
             res.send(err);
@@ -127,13 +132,118 @@ router.route('/recipes/:id')
      //responds with a json object of our database comments.
      res.json(recipe);
     });
+  })
+  .put(function(req, res){ //find a recipe, then construct a query object and based on that update the check value
+    let recId = req.params.id;
+    let ingIndex = req.body.ingIndex;
+    let ingState = req.body.ingState;
+    console.log('ingIndex: ', ingIndex,' ing State: ', ingState);
+    let indexString = 'ingCheck.'+ingIndex;
+    console.log('indexString: ', indexString);
+    let updateValue = {};
+    if(ingState === 0){
+      updateValue[indexString] = 1;
+    } else {
+      updateValue[indexString] = 0;
+    }
+    console.log('update value: ', updateValue);
+
+    let favName = req.body.favName;
+    let favFriendId = 'facebook|'+req.body.favFriendId;
+    // console.log(favFriendId);
+    let recName = req.body.recName;
+
+    if (!favName){
+      console.log('passed the test');
+      Recipe.update({ _id: recId }, { $set: updateValue },function(err) {
+        if (err)
+        res.send(err);
+        res.send();
+      });
+    } else if(favName) {
+      Recipe.update({ _id: recId }, { $push: { friends: {favFriendId: favFriendId, favName: favName} } },function(err) {
+        if (err)
+        res.send(err);
+        // res.send();
+        User.update({ fbId: favFriendId }, { $push: { recFriend: {recId: recId, recName: recName} }},function(err) {
+          if (err)
+          res.send(err);
+          res.send();
+        });
+      });
+    }
   });
+
+  //retrieve the friends using app
+  router.route('/friends/:id')
+    //retrieve the recipe from the database
+    .get(function(req, res) {
+      // let userId = req.params.userId;
+      const userId = req.params.id;
+      // console.log('userId: ',userId);
+      var options = { method: 'POST',
+        url: 'https://janisoteps.eu.auth0.com/oauth/token',
+        headers: { 'content-type': 'application/json' },
+        body: '{"client_id":"za29Xdrk3ODATb31nECPoBL0C5XSAGYW","client_secret":"vIkwwOSsUVlJWkCZ2oKOh13mn316VCbkG57KIpXYAGl71vwVO5GTCvGdt0c7Ggpk","audience":"https://janisoteps.eu.auth0.com/api/v2/","grant_type":"client_credentials"}' };
+
+      request(options, function (error, response, body) {
+        if (error) throw new Error(error);
+
+        // // console.log(body);
+        // res.json(body);
+        let tokenData = JSON.parse(body);
+        const authToken = tokenData.access_token;
+        // console.log('token: ',authToken);
+        var authorization = 'Bearer '+authToken;
+        var url = 'https://janisoteps.eu.auth0.com/api/v2/users/'+userId;
+
+        var fbOptions = { method: 'GET',
+          url: url,
+          headers: { authorization: authorization } };
+
+        request(fbOptions, function (error, response, body) {
+          if (error) throw new Error(error);
+
+          // console.log(body);
+          // res.json(body);
+          var data = JSON.parse(body);
+          // console.log(data);
+          let id = data.identities[0].user_id;
+          let access_token = data.identities[0].access_token;
+          let pictureLarge = data.picture_large;
+
+          graphCall(id, access_token, pictureLarge);
+
+        });
+      });
+
+      function graphCall(id, access_token, pictureLarge){
+        console.log('graphCall check: ',id);
+        let graphOptions = {
+            timeout:  3000
+          , pool:     { maxSockets:  Infinity }
+          , headers:  { connection:  "keep-alive" }
+        };
+
+        let fbId = id;
+
+        graph.setAccessToken(access_token);
+
+        graph
+          .setOptions(graphOptions)
+          .get(fbId+'?fields=friends', function(err, response) {
+            // console.log(response);
+            var serverResponse ={friends: response.friends.data, picture: pictureLarge};
+            res.json(serverResponse);
+          });
+      }
+    });
 
 //post or get user data used for linking recipes
 router.route('/users')
   //retrieve user info
   .get(function(req, res) {
-    console.log(req.query.fbId);
+    // console.log(req.query.fbId);
     //looks at our User Schema
     User.find({ fbId: req.query.fbId }).exec(function(err, user) {
      if (err)
@@ -159,12 +269,37 @@ router.route('/users')
     let id = req.body.id;
     let recId = req.body.recId;
     let recName = req.body.recName;
-    User.update({ _id: id }, { $push: { recOwner: {recId: recId, recName: recName} }},function(err) {
-      if (err)
-      res.send(err);
-      res.send();
-    });
-    console.log('User updated - user ID:',id,' recipe ID:',recId,' recipe name:',recName);
+    let favFriendId = req.body.favFriendId;
+    let favName = req.body.favName;
+    if (recName){
+      User.update({ _id: id }, { $push: { recOwner: {recId: recId, recName: recName} }},function(err) {
+        if (err)
+        res.send(err);
+        res.send();
+      });
+      // console.log('User updated - user ID:',id,' recipe ID:',recId,' recipe name:',recName);
+    } else if (favFriendId) {
+      var conditions = {
+          _id: id,
+          'favFriends.favFriendId': { $ne: favFriendId }
+      };
+
+      var update = {
+          $addToSet: { favFriends: {favFriendId: favFriendId, favName: favName} }
+      }
+
+      User.findOneAndUpdate(conditions, update, function(err, doc) {
+        if (err)
+          res.send(err);
+          res.send();
+      });
+
+      // User.update({ _id: id }, { $push: { favFriends: {favFriendId: favFriendId, favName: favName} }},function(err) {
+      //   if (err)
+      //   res.send(err);
+      //   res.send();
+      // });
+    }
   });
 
 //Use our router configuration when we call /api

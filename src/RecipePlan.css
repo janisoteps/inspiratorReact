@@ -1,0 +1,14 @@
+#ingRow{
+  vertical-align: middle;
+}
+#ingRow:hover {
+  background-color: #efefef;
+  -webkit-transition: background-color 500ms linear;
+  -ms-transition: background-color 500ms linear;
+  transition: background-color 500ms linear;
+}
+#cartIcon{
+  vertical-align: middle;
+  display: inline-block;
+  margin-top: 5px;
+}

@@ -165,12 +165,44 @@ inspIngredients:{
   marginLeft: '10vw'
 },
 gotIngredient:{
-  float: 'right',
-  marginTop: '-10px'
+  width: '20vw',
+  display: 'inline-block',
+  float: 'right'
+},
+ingLine:{
+  width: '60vw',
+  display: 'inline-block',
+  position: 'relative',
+  paddingLeft:'10px',
+  marginRight: '10px'
+},
+ingRow:{
+  minHeight: '40px',
+  paddingLeft: '10px',
+  paddingBottom: '5px',
+  paddingTop: '5px'
 },
 inspRecipe:{
   position: 'relative',
   zIndex: '-100'
+},
+favFriend:{
+  float: 'right',
+  width: '20px',
+  marginTop: '-10px'
+},
+directions:{
+  fontFamily:'Roboto',
+  textDecoration:'none',
+  textAlign: 'center'
+},
+tickIcon: {
+  display: 'inline-block',
+  marginTop: '5px'
+},
+recipeImage: {
+  maxWidth: '100vw',
+  height: 'auto',
 }
 }
 module.exports = style;

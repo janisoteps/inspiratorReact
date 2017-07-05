@@ -19,7 +19,9 @@
     "react-scroll": "1.5.2",
     "react-tap-event-plugin": "^2.0.1",
     "request": "2.81.0",
-    "typeface-roboto": "0.0.22"
+    "typeface-roboto": "0.0.22",
+    "fbgraph": "1.4.1",
+    "qs": "1.2.2"
   },
   "devDependencies": {
     "react-scripts": "0.9.5"

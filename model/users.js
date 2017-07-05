@@ -10,7 +10,8 @@ var userSchema = new Schema({
   name: String,
   fbId: String,
   recOwner: Array,
-  recFriend: Array
+  recFriend: Array,
+  favFriends: Array
 });
 //export our module to use in server.js
 module.exports = mongoose.model('Users', userSchema);

@@ -7,6 +7,7 @@ import Paper from 'material-ui/Paper';
 import {List, ListItem} from 'material-ui/List';
 import FontIcon from 'material-ui/FontIcon';
 import Subheader from 'material-ui/Subheader';
+import FlatButton from 'material-ui/FlatButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 
@@ -16,6 +17,8 @@ class Profile extends Component {
   constructor(props) {
     super(props);
     this.goTo = this.goTo.bind(this);
+    this.getFriends = this.getFriends.bind(this);
+    this.addFavorite = this.addFavorite.bind(this);
   }
 
   componentWillMount() {
@@ -41,7 +44,8 @@ class Profile extends Component {
     axios.get('http://localhost:3001/api/users', { params: { fbId: fbId } })
     .then(res => {
       this.setState({ user: res.data[0] });
-      console.log(res);
+      console.log(res.data[0]);
+      this.getFriends();
     });
   }
 
@@ -50,17 +54,52 @@ class Profile extends Component {
     this.props.history.replace(`/recipe/${route}`);
   }
 
+  //Get friends and picture from server
+  getFriends() {
+    // console.log('getFriends runs');
+    // console.log(this.state);
+    var userId = this.state.profile.sub;
+    let friendEndPoint = 'http://localhost:3001/api/friends/'+userId;
+    //get friend list from server
+    axios.get(friendEndPoint)
+    .then(res => {
+      // console.log(res);
+      let friendData = res.data.friends;
+      // console.log('Friends: ',friendData);
+      this.setState({ friends: friendData });
+      // console.log('Picture: ', res.data.picture);
+      this.setState({ picture: res.data.picture});
+    })
+  }
+
+  addFavorite(favObj){
+    let favFriendId = favObj.favFriendId;
+    let favName = favObj.favName;
+    // console.log('user: ',this.state.user);
+    let userId = this.state.user._id;
+
+    axios.put('http://localhost:3001/api/users', {
+      id: userId,
+      favFriendId: favFriendId,
+      favName: favName
+    }).then(res => {
+      console.log(res);
+      // this.setState({ data: res.data });
+      this.getMongoProfile(this.state.user.fbId);
+    });
+  }
+
   render() {
     const { profile } = this.state;
     // console.log(profile);
 
     if(profile.name){
-      let fbId = profile.sub.substr(profile.sub.length - 16);
-      var picurl = 'https://graph.facebook.com/' + fbId + '/picture?width=9999';
+      // let fbId = profile.sub.substr(profile.sub.length - 16);
+      var picurl = this.state.picture;
     }
 
     var recipeNodes = '';
-    console.log(this.state.user);
+    // console.log(this.state.user);
     if (this.state.user) {
       recipeNodes = this.state.user.recOwner.map(recipe => {
         return (
@@ -77,6 +116,42 @@ class Profile extends Component {
       recipeNodes = 'Loading';
     }
 
+    var friendNodes = '';
+    var favIcon = '';
+    // console.log(this.state.user);
+    if (this.state.friends) {
+      friendNodes = this.state.friends.map(friend => {
+        var favData = {};
+        favData.favFriendId = friend.id;
+        favData.favName = friend.name;
+        if(this.state.user.favFriends.find(function(item){return item.favFriendId === friend.id})){
+          // console.log('is a fav');
+          favIcon = 'favorite';
+        } else {
+          favIcon = 'favorite_border';
+        }
+        return (
+          <ListItem
+            primaryText={ friend.name }
+            key={ friend.id }
+            leftIcon={<FontIcon className="material-icons">face</FontIcon>}
+            // onClick={this.goTo.bind(this, recipe.recId)}
+            >
+              <FlatButton
+                href=""
+                secondary={true}
+                icon={<FontIcon className="material-icons">{favIcon}</FontIcon>}
+                style={style.favFriend}
+                onClick={this.addFavorite.bind(this, favData)}
+              />
+            {/* { friend.name } */}
+          </ListItem>
+        )
+      });
+    } else {
+      friendNodes = 'Loading';
+    }
+
 
     return (
       <MuiThemeProvider>
@@ -90,6 +165,12 @@ class Profile extends Component {
 
             {/* </Paper> */}
           </div>
+          <Paper style={style.profileRecOwn}>
+            <List>
+              <Subheader>Your Friends Also Using This App</Subheader>
+              { friendNodes }
+            </List>
+          </Paper>
           <Paper style={style.profileRecOwn}>
           <List>
             <Subheader>Your Recipes</Subheader>

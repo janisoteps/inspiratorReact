@@ -42,7 +42,7 @@ class Generator extends Component {
       recId: id,
       recName: recipeName
     }).then(res => {
-      console.log(res.data);
+      // console.log(res.data);
       // this.setState({ data: res.data });
     });
 

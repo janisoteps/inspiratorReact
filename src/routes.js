@@ -7,6 +7,7 @@ import Auth from './Auth/Auth';
 import history from './history';
 import Profile from './Profile/Profile';
 import RecipePlan from './RecipePlan';
+import AddFriends from './AddFriends';
 
 
 const auth = new Auth();
@@ -43,17 +44,26 @@ export const makeMainRoutes = () => {
             )
           )} />
 
-          <Route path="/recipe/:id" render={(props) => (
-              !auth.isAuthenticated() ? (
-                <Redirect to="/"/>
-              ) : (
-                <RecipePlan
-                  auth={auth}
-                  {...props}
-                  url='http://localhost:3001/api/comments'
-                  pollInterval={10000} />
-              )
-            )} />
+        <Route path="/recipe/:id" render={(props) => (
+            !auth.isAuthenticated() ? (
+              <Redirect to="/"/>
+            ) : (
+              <RecipePlan
+                auth={auth}
+                {...props}
+                url='http://localhost:3001/api/comments'
+                pollInterval={10000} />
+            )
+          )} />
+
+        <Route path="/addfriends/:id" render={(props) => (
+          !auth.isAuthenticated() ? (
+            <Redirect to="/"/>
+          ) : (
+            <AddFriends history={history} auth={auth} {...props} url='http://localhost:3001/api/comments'
+            pollInterval={10000} />
+          )
+        )} />
       </div>
     </BrowserRouter>
   );
