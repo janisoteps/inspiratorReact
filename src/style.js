@@ -165,12 +165,12 @@ inspIngredients:{
   marginLeft: '10vw'
 },
 gotIngredient:{
-  width: '20vw',
+  width: '120px',
   display: 'inline-block',
   float: 'right'
 },
 ingLine:{
-  width: '60vw',
+  width: '60%',
   display: 'inline-block',
   position: 'relative',
   paddingLeft:'10px',
@@ -198,7 +198,8 @@ directions:{
 },
 tickIcon: {
   display: 'inline-block',
-  marginTop: '5px'
+  width: '24px',
+  verticalAlign: 'middle'
 },
 recipeImage: {
   maxWidth: '100vw',

@@ -22,8 +22,9 @@ class Generator extends Component {
   genId(){
     let id = Math.floor((Math.random() * 40000) + 10000);
     // console.log(id);
-    this.setState({ recipeId: id });
-    this.props.onRecGen({ recipeId: id });
+    console.log('user id :',this.props.user[0]._id);
+    this.setState({ recipeId: id , userId: this.props.user[0]._id });
+    this.props.onRecGen({ recipeId: id , userId: this.props.user[0]._id  });
     // console.log(`${id} is the new recipe Id`);
     this.setState({ recipeId: '' });
   }

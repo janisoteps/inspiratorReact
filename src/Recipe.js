@@ -23,7 +23,8 @@ class Recipe extends Component {
     }
     //map the ingredients array to a list of ingredients
     let ingredients = this.props.recipe.ingredients.map(ingredient => {
-      var index = this.props.recipe.ingredients.indexOf(ingredient);
+      let index = this.props.recipe.ingredients.indexOf(ingredient) + Math.random();
+      index = index.toFixed(2);
       console.log(index);
       return (
         <div key={ index }>

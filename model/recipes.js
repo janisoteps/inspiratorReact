@@ -13,7 +13,7 @@ var recipeSchema = new Schema({
   directions: String,
   title: String,
   socialRank: Number,
-  owner: Object,
+  owner: String,
   friends: Array
 });
 //export our module to use in server.js

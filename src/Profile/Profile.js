@@ -49,6 +49,7 @@ class Profile extends Component {
     });
   }
 
+  //Change the history route for router
   goTo(route) {
     console.log(route);
     this.props.history.replace(`/recipe/${route}`);
@@ -72,6 +73,7 @@ class Profile extends Component {
     })
   }
 
+  //Add a FB friend that's also using app as a favorite
   addFavorite(favObj){
     let favFriendId = favObj.favFriendId;
     let favName = favObj.favName;
@@ -98,6 +100,7 @@ class Profile extends Component {
       var picurl = this.state.picture;
     }
 
+    //Nodes to display a list of recipes that user has chosen to do
     var recipeNodes = '';
     // console.log(this.state.user);
     if (this.state.user) {
@@ -116,6 +119,26 @@ class Profile extends Component {
       recipeNodes = 'Loading';
     }
 
+    //Nodes to display a list of recipes that user has chosen to do
+    var recInviteNodes = '';
+    // console.log(this.state.user);
+    if (this.state.user) {
+      recInviteNodes = this.state.user.recFriend.map(recipe => {
+        return (
+          <ListItem
+            primaryText={ recipe.recName }
+            key={ recipe['recId'] }
+            leftIcon={<FontIcon className="material-icons">local_dining</FontIcon>}
+            onClick={this.goTo.bind(this, recipe.recId)}>
+            {/* { recipe.recName } */}
+          </ListItem>
+        )
+      });
+    } else {
+      recInviteNodes = 'Loading';
+    }
+
+    //Nodes to show a list of friends that also use this app
     var friendNodes = '';
     var favIcon = '';
     // console.log(this.state.user);
@@ -124,6 +147,7 @@ class Profile extends Component {
         var favData = {};
         favData.favFriendId = friend.id;
         favData.favName = friend.name;
+        //check if user's friend that's also using this app is added as a favorite
         if(this.state.user.favFriends.find(function(item){return item.favFriendId === friend.id})){
           // console.log('is a fav');
           favIcon = 'favorite';
@@ -175,6 +199,12 @@ class Profile extends Component {
           <List>
             <Subheader>Your Recipes</Subheader>
             { recipeNodes }
+          </List>
+          </Paper>
+          <Paper style={style.profileRecOwn}>
+          <List>
+            <Subheader>Recipe Invites</Subheader>
+            { recInviteNodes }
           </List>
           </Paper>
         </div>

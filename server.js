@@ -93,6 +93,7 @@ router.route('/recipes')
   .post(function(req, res) {
     var recipe = new Recipe();
     let id = req.body.recipeId;
+    let userId = req.body.userId;
     // console.log(id);
 
     var recipeUrl = "http://food2fork.com/api/get?key=19b9f7e3df065a89d6f1f874374989a3&rId="+id;
@@ -104,11 +105,16 @@ router.route('/recipes')
         // console.log(body);
         recipe.image = body.recipe.image_url;
         recipe.ingredients = body.recipe.ingredients;
+        if(!recipe.ingredients){
+          res.send(error);
+          return
+        }
         let ingLength = recipe.ingredients.length;
         recipe.ingCheck = new Array(ingLength).fill(0);
         recipe.directions = body.recipe.source_url;
         recipe.title = body.recipe.title;
         recipe.socialRank = body.recipe.social_rank;
+        recipe.owner = userId;
         recipe.save(function(err, model){
           if(err){
             res.send(err);
@@ -233,6 +239,10 @@ router.route('/recipes/:id')
           .setOptions(graphOptions)
           .get(fbId+'?fields=friends', function(err, response) {
             // console.log(response);
+            if(!response.friends){
+              res.json(err);
+              return
+            }
             var serverResponse ={friends: response.friends.data, picture: pictureLarge};
             res.json(serverResponse);
           });
