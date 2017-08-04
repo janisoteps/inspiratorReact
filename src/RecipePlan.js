@@ -7,17 +7,14 @@ import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
-import CommentList from './CommentList';
-import CommentForm from './CommentForm';
 import './RecipePlan.css';
+import RecipeChat from './RecipeChat';
 
 
 class RecipePlan extends Component {
   constructor(props) {
     super(props);
     this.state = { recipe: {}, data: []};
-    this.loadCommentsFromServer = this.loadCommentsFromServer.bind(this);
-    this.handleCommentSubmit = this.handleCommentSubmit.bind(this);
     this.getRecipe = this.getRecipe.bind(this);
     this.ingCheck = this.ingCheck.bind(this);
     this.getFavs = this.getFavs.bind(this);
@@ -46,7 +43,7 @@ class RecipePlan extends Component {
       getProfile((err, profile) => {
         this.setState({ profile });
         let fbId = profile.sub;
-        console.log('comp will mount profile fbId: ', fbId);
+        // console.log('comp will mount profile fbId: ', fbId);
         this.getFavs(fbId);
       });
     } else {
@@ -55,76 +52,42 @@ class RecipePlan extends Component {
       // console.log('comp will mount profile fbId: ', fbId);
       this.getFavs(fbId);
     }
-    this.loadCommentsFromServer();
   }
 
   componentDidUpdate(){
-    // console.log('updated');
+
   }
 
   componentDidMount(){
-        // // this.ownerCheck();
-        // if(this.state.user){
-        //   this.ownerCheck();
-        // }
-        // while(!this.state.user){
-        //
-        // }
+
   }
 
-  loadCommentsFromServer() {
-    if (this.props.history.location.pathname === '/profile'){
-      return
-    }
-    axios.get(this.props.url, { params: { recId: this.state.recipe._id } })
-    .then(res => {
-      // console.log('check');
-      this.setState({ data: res.data });
-    });
-    // setInterval(this.loadCommentsFromServer, this.props.pollInterval);
-  }
-
-  //post comments to server
-  handleCommentSubmit(comment) {
-    //add POST request
-    axios.post(this.props.url, comment)
-    .then(res => {
-      // console.log(res);
-      // this.setState({ data: res.data });
-    })
-    .catch(err => {
-      console.error(err);
-    });
-  }
 
   //Update recipe ingredient checklist
   ingCheck(index){
-    console.log('clicked', index);
+    // console.log('clicked', index);
     // console.log(this.state.recipe._id);
     let url = 'http://localhost:3001/api/recipes/'+this.state.recipe._id;
     let ingIndex = index;
     let ingState = this.state.recipe.ingCheck[ingIndex];
-    console.log(ingState);
-    console.log(url);
+    // console.log(ingState);
+    // console.log(url);
     axios.put(url, {
       ingIndex: ingIndex,
       ingState: ingState
     }).then(res => {
       // console.log(res);
-      // this.setState({ data: res.data });
       this.getRecipe(this.props.match.params.id);
     });
   }
 
   //Retrieve users favorited friends
   getFavs(fbookId, counter){
-    // let fbId = this.state.profile.sub;
     let fbId = fbookId;
     axios.get('http://localhost:3001/api/users', { params: { fbId: fbId } })
     .then(res => {
       this.setState({ user: res.data[0] });
       // console.log(res.data[0]);
-      // this.getRecipe(this.props.match.params.id);
       this.ownerCheck();
     });
     // console.log(this.state.user.favFriends);
@@ -143,7 +106,6 @@ class RecipePlan extends Component {
       recName: recName
     }).then(res => {
       // console.log(res);
-      // this.setState({ data: res.data });
       this.getRecipe(this.props.match.params.id);
     });
   }
@@ -151,9 +113,9 @@ class RecipePlan extends Component {
   //Get the fav friend id from fav friend array map function, loop through recipe friends array and check if that id is already there.
   //Give false result if it's there as in false we do not show this friend as an option to be added to recipe
   favCheck(favId){
-    console.log(favId);
+    // console.log(favId);
     for (var i = 0; i < this.state.recipe.friends.length; i++) {
-        console.log(this.state.recipe.friends[i].favFriendId);
+        // console.log(this.state.recipe.friends[i].favFriendId);
         let fid = this.state.recipe.friends[i].favFriendId;
         fid = fid.substr(fid.length - 15);
         if (favId === fid){
@@ -165,9 +127,9 @@ class RecipePlan extends Component {
 
   //Compare the user id in state to owner id of the recipe state
   ownerCheck() {
-    console.log('user id: ', this.state.user._id);
-    console.log('recipe owner id ', this.state.recipe.owner);
-    console.log('are they the same: ', this.state.user._id === this.state.recipe.owner);
+    // console.log('user id: ', this.state.user._id);
+    // console.log('recipe owner id ', this.state.recipe.owner);
+    // console.log('are they the same: ', this.state.user._id === this.state.recipe.owner);
     if (this.state.user._id === this.state.recipe.owner) {
       this.setState({ownerCheck: true});
       return
@@ -179,7 +141,7 @@ class RecipePlan extends Component {
 
   render() {
     let isOwner = this.state.ownerCheck;
-    console.log(isOwner);
+    // console.log(isOwner);
     let recipeTitle = this.state.recipe.title;
     let recipeImage = this.state.recipe.image;
     let directions = this.state.recipe.directions;
@@ -297,9 +259,8 @@ class RecipePlan extends Component {
             </div>
           </div>
           <div style={ style.commentBox }>
-            <h2>Comments:</h2>
-            <CommentList data={ this.state.data }/>
-            <CommentForm recId={this.props.match.params.id} profile={this.state.profile} onCommentSubmit={ this.handleCommentSubmit }/>
+            <h2>Chat:</h2>
+            <RecipeChat recId={this.state.recipe._id} user={this.state.user}/>
           </div>
         </div>
       </MuiThemeProvider>

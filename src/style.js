@@ -71,6 +71,11 @@ const style = {
    height:'1px'
  },
  generator: {
+   position: 'fixed',
+   zIndex: '10000',
+   backgroundColor: 'black'
+ },
+ generatorButton: {
    fontFamily:'Roboto',
    height: '60px',
    verticalAlign: 'middle'
@@ -126,7 +131,8 @@ headerBar: {
   width: '100vw',
   height: '40px',
   backgroundColor: '#fff',
-  boxShadow: '0px 0px 4px rgba(0, 0, 0, .5)'
+  boxShadow: '0px 0px 4px rgba(0, 0, 0, .5)',
+  zIndex: '100000'
 },
 profile: {
   fontFamily:'Roboto',
@@ -136,7 +142,8 @@ blankFooter: {
   height: '60px'
 },
 yesButton: {
-  width: '50%'
+  width: '50%',
+  zIndex: '10000'
 },
 yesContainer:{
   width: '40vw',
@@ -145,7 +152,8 @@ yesContainer:{
   right: '5px'
 },
 noButton: {
-  width: '50%'
+  width: '50%',
+  zIndex: '10000'
 },
 noContainer:{
   width: '40vw',

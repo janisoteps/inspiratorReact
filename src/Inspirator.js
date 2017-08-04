@@ -39,6 +39,7 @@ class Inspirator extends Component {
 
  //Once the recipe is generated and saved in mongo, use the mongo id to retrieve the recipe and set it to state
  getRecipe(recipeGet){
+   if(this.unmounted) return
   //  console.log(recipeGet);
    axios.get(recipeGet)
    .then(res => {
@@ -96,6 +97,10 @@ class Inspirator extends Component {
 
  }
 
+ componentWillUnmount() {
+   this.unmounted = true;
+ }
+
  render() {
   //  console.log(this.state.recipe);
    return (
@@ -107,7 +112,9 @@ class Inspirator extends Component {
            <Recipe style={style.inspRecipe} recipe={ this.state.recipe }/>
            {/* <Generator user={this.state.user} history={this.props.history} recipe={ this.state.recipe } onRecGen={ this.handleRecipeGen } /> */}
          </div>
-         <Generator user={this.state.user} history={this.props.history} recipe={ this.state.recipe } onRecGen={ this.handleRecipeGen } />
+         <div style={style.generator}>
+           <Generator user={this.state.user} history={this.props.history} recipe={ this.state.recipe } onRecGen={ this.handleRecipeGen } />
+         </div>
          <div style={style.blankFooter}></div>
        </div>
      </MuiThemeProvider>

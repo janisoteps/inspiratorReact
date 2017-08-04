@@ -13,9 +13,13 @@ var router = express.Router();
 //set our port to either a predetermined port number if you have set
 //it up, or 3001
 var port = process.env.API_PORT || 3001;
+var socketport = 8080;
 
 var request = require('request');
 var graph = require('fbgraph');
+//vars for sockets
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
 
 mongoose.Promise = global.Promise;
@@ -42,6 +46,108 @@ app.use(function(req, res, next) {
  res.setHeader('Cache-Control', 'no-cache');
  next();
 });
+
+
+//*********** SOCKETS API ******************
+
+//Whenever someone connects this gets executed
+io.on('connection', function(client){
+  console.log('A user connected');
+
+  //When subscribed to timer ingest the interval and emit the date
+  client.on('subscribeToTimer', (interval) => {
+    console.log('client is subscribing to timer with interval ', interval);
+    setInterval(() => {
+      client.emit('timer', new Date());
+    }, interval);
+  });
+
+  //When subscribed to chat ingest the recipe id and emit the message updates, also join the client to room of the recipe
+  client.on('subscribeToChat', (recId) => {
+    client.join('room-'+recId);
+    console.log('client is subscribing to room of recipe: ', recId);
+    Comment.find({ recId: recId }).exec(function(err, comments) {
+      client.emit('chat', comments);
+    });
+  });
+
+  //When someone sends message, save it to database and send to others
+  client.on('message', function(data){
+    let recId = data.recId;
+    let message = data.message;
+    let author = data.author;
+    let authorId = data.authorId;
+    let date = data.date;
+    var commentExists = false;
+    //Check if comment entry has been started in database
+    Comment.find({ recId: recId }).exec(function(err, comments) {
+      // console.log(comments[0]);
+      if(comments[0]){
+        commentExists = true;
+      }
+
+      //Update the comment entry with new message
+      if(commentExists){
+        Comment.update({ recId: recId }, { $push: { comments: {comment: message, author: author, authorId: authorId, date: date} }},function(err) {
+          Comment.find({ recId: recId }).exec(function(err, comments) {
+            client.emit('chat', comments);
+            // io.sockets.emit('chat', comments);
+            io.sockets.in('room-'+recId).emit('chat', comments);
+          });
+        });
+      } else {
+        var newComment = new Comment();
+        newComment.recId = recId;
+        newComment.comments = [{comment: message, author: author, authorId: authorId, date: date}];
+        newComment.save(function(err) {
+          if (err)
+          console.log(err);
+          Comment.find({ recId: recId }).exec(function(err, comments) {
+            client.emit('chat', comments);
+            io.sockets.in('room-'+recId).emit('chat', comments);
+          });
+        });
+      }
+    });
+
+    // //Update the comment entry with new message
+    // if(commentExists){
+    //   Comment.update({ recId: recId }, { $push: { comments: {recId: recId, comment: message, author: author, authorId: authorId, date: date} }},function(err) {
+    //     Comment.find({ recId: recId }).exec(function(err, comments) {
+    //       client.emit('chat', comments);
+    //     });
+    //   });
+    // } else {
+    //   var newComment = new Comment();
+    //   newComment.recId = recId;
+    //   newComment.comments = [{comment: message, author: author, authorId: authorId, date: date}];
+    //   newComment.save(function(err) {
+    //     if (err)
+    //     console.log(err);
+    //     Comment.find({ recId: recId }).exec(function(err, comments) {
+    //       client.emit('chat', comments);
+    //     });
+    //   });
+    // }
+
+    // //Send message to everyone
+    // io.sockets.emit('chat', comments);
+  })
+
+  //Whenever someone disconnects this piece of code executed
+  client.on('disconnect', function () {
+    console.log('A user disconnected');
+  });
+
+});
+
+io.listen(socketport);
+console.log(`socket running on port ${socketport}`);
+
+
+
+//*********** REST OF THE API ******************
+
 //now we can set the route path & initialize the API
 router.get('/', function(req, res) {
  res.json({ message: 'API Initialized!'});
@@ -239,7 +345,7 @@ router.route('/recipes/:id')
           .setOptions(graphOptions)
           .get(fbId+'?fields=friends', function(err, response) {
             // console.log(response);
-            if(!response.friends){
+            if(!response){
               res.json(err);
               return
             }

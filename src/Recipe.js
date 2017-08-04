@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import style from './style';
-import List from 'material-ui/List';
+import {List, ListItem} from 'material-ui/List';
 import FontIcon from 'material-ui/FontIcon';
 // import RaisedButton from 'material-ui/RaisedButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -25,11 +25,11 @@ class Recipe extends Component {
     let ingredients = this.props.recipe.ingredients.map(ingredient => {
       let index = this.props.recipe.ingredients.indexOf(ingredient) + Math.random();
       index = index.toFixed(2);
-      console.log(index);
+      // console.log(index);
       return (
-        <div key={ index }>
-          <p><FontIcon className="material-icons">local_grocery_store</FontIcon> {ingredient}</p>
-        </div>
+        <ListItem key={ index }>
+          <FontIcon className="material-icons">local_grocery_store</FontIcon> {ingredient}
+        </ListItem>
       )});
 
     return(

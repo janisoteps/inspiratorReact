@@ -22,7 +22,7 @@ class Generator extends Component {
   genId(){
     let id = Math.floor((Math.random() * 40000) + 10000);
     // console.log(id);
-    console.log('user id :',this.props.user[0]._id);
+    // console.log('user id :',this.props.user[0]._id);
     this.setState({ recipeId: id , userId: this.props.user[0]._id });
     this.props.onRecGen({ recipeId: id , userId: this.props.user[0]._id  });
     // console.log(`${id} is the new recipe Id`);
@@ -67,7 +67,7 @@ class Generator extends Component {
                 style={ style.genContainer }
                 onClick={this.genId.bind(this)}
                 labelStyle={ style.genLabel }
-                buttonStyle={ style.generator}
+                buttonStyle={ style.generatorButton}
                 label="Generate Recipe"/>
             </div>
           )
@@ -83,7 +83,7 @@ class Generator extends Component {
                   style={ style.yesContainer }
                   onClick={this.recYes.bind(this, isRecipe)}
                   labelStyle={ style.genLabel }
-                  buttonStyle={ style.generator}
+                  buttonStyle={ style.generatorButton}
                   label="Let's Go!"/>
               </div>
               <div style={style.noButton}>
@@ -93,7 +93,7 @@ class Generator extends Component {
                   style={ style.noContainer }
                   onClick={this.genId}
                   labelStyle={ style.genLabel }
-                  buttonStyle={ style.generator}
+                  buttonStyle={ style.generatorButton}
                   label="Nope"/>
               </div>
             </div>
