@@ -110,29 +110,7 @@ io.on('connection', function(client){
       }
     });
 
-    // //Update the comment entry with new message
-    // if(commentExists){
-    //   Comment.update({ recId: recId }, { $push: { comments: {recId: recId, comment: message, author: author, authorId: authorId, date: date} }},function(err) {
-    //     Comment.find({ recId: recId }).exec(function(err, comments) {
-    //       client.emit('chat', comments);
-    //     });
-    //   });
-    // } else {
-    //   var newComment = new Comment();
-    //   newComment.recId = recId;
-    //   newComment.comments = [{comment: message, author: author, authorId: authorId, date: date}];
-    //   newComment.save(function(err) {
-    //     if (err)
-    //     console.log(err);
-    //     Comment.find({ recId: recId }).exec(function(err, comments) {
-    //       client.emit('chat', comments);
-    //     });
-    //   });
-    // }
-
-    // //Send message to everyone
-    // io.sockets.emit('chat', comments);
-  })
+  });
 
   //Whenever someone disconnects this piece of code executed
   client.on('disconnect', function () {

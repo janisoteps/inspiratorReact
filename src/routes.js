@@ -25,8 +25,7 @@ export const makeMainRoutes = () => {
         <Route exact path="/" render={(props) => <Inspirator
            auth={auth}
            {...props}
-           url='http://localhost:3001/api/comments'
-           pollInterval={10000} />}
+           url='http://localhost:3001/api/comments' />}
          />
 
         <Route path="/home" render={(props) => <Home auth={auth} {...props} />} />

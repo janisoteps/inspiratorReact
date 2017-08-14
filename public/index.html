@@ -15,6 +15,22 @@
     <title>Recipe Inspirator</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
+
+    <style>
+      :root {
+        --image: url(./images/bg1.jpeg);
+      }
+      body {
+        /*background-image: var(--image);*/
+        background-color: #706d68;
+        /*background: linear-gradient(to bottom, #706d68, #9e8f78);*/
+        background-image: url(./images/bg1.jpeg);
+        background-position: 50% 0%;
+        background-attachment: fixed;
+        overflow: visible;
+        background-size: cover;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
@@ -28,5 +44,13 @@
       To begin the development, run `npm start`.
       To create a production bundle, use `npm run build`.
     -->
+    <script>
+      var body = document.querySelector('body');
+      var num = Math.floor(Math.random()*13+1);
+      var bgImg = 'url(./images/bg'+num+'.jpeg)';
+      body.style.setProperty('background-image', bgImg);
+      console.log(bgImg);
+    </script>
   </body>
+
 </html>

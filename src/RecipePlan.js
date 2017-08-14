@@ -5,6 +5,7 @@ import style from './style';
 import {List} from 'material-ui/List';
 import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
+import Paper from 'material-ui/Paper';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import './RecipePlan.css';
@@ -244,22 +245,27 @@ class RecipePlan extends Component {
               <div style={style.directions}>
                 <a href={directions} target="blank" style={style.directions}><h2>Click here to read instructions</h2></a>
               </div>
-              <List style={style.recipeIngredients}>
-                <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Friends Also On This Recipe</h2>
-                { friendlist }
-              </List>
-              <List style={style.recipeIngredients}>
-                <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Friends To Add To Recipe</h2>
-                { favlist }
-              </List>
-              <List style={style.recipeIngredients}>
-                <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Ingredients</h2>
-                { ingredients }
-              </List>
+              <Paper style={style.profileRecOwn}>
+                <List style={style.recipeIngredients}>
+                  <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Friends Also On This Recipe</h2>
+                  { friendlist }
+                </List>
+              </Paper>
+              <Paper style={style.profileRecOwn}>
+                <List style={style.recipeIngredients}>
+                  <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Friends To Add To Recipe</h2>
+                  { favlist }
+                </List>
+              </Paper>
+              <Paper style={style.profileRecOwn}>
+                <List style={style.recipeIngredients}>
+                  <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Ingredients</h2>
+                  { ingredients }
+                </List>
+              </Paper>
             </div>
           </div>
           <div style={ style.commentBox }>
-            <h2>Chat:</h2>
             <RecipeChat recId={this.state.recipe._id} user={this.state.user}/>
           </div>
         </div>

@@ -1,7 +1,7 @@
 //style.js
 const style = {
  commentBox: {
- width:'80vw',
+ width:'96vw',
  margin:'0 auto',
  fontFamily:'Roboto'
  },
@@ -91,13 +91,15 @@ const style = {
  },
  recipeTitle: {
    fontFamily:'Roboto',
-   textAlign: 'center'
+   textAlign: 'center',
+   color: '#F2EEF1',
+   textShadow: '0px 0px 6px #282623'
  },
  noRecipe: {
    fontFamily:'Roboto',
    textAlign: 'center',
    marginTop: '35vh',
-   color: '#9b9b9b'
+   color: 'white'
  },
  link: {
    textDecoration:'none'
@@ -130,13 +132,14 @@ headerBar: {
   left: '0px',
   width: '100vw',
   height: '40px',
-  backgroundColor: '#fff',
+  backgroundColor: '#2b2824',
   boxShadow: '0px 0px 4px rgba(0, 0, 0, .5)',
   zIndex: '100000'
 },
 profile: {
   fontFamily:'Roboto',
-  textAlign: 'center'
+  textAlign: 'center',
+  color: 'white'
 },
 blankFooter: {
   height: '60px'
@@ -162,15 +165,19 @@ noContainer:{
   left: '5px'
 },
 profileRecOwn:{
-  height: '38vh',
-  overflow: 'scroll'
+  maxHeight: '45vh',
+  overflow: 'scroll',
+  backgroundColor: '#DCECFF',
+  marginBottom: '15px',
+  paddingLeft: '5px'
 },
 recipeIngredients:{
   fontFamily:'Roboto'
 },
 inspIngredients:{
   fontFamily:'Roboto',
-  marginLeft: '10vw'
+  marginLeft: '10vw',
+  color: 'white'
 },
 gotIngredient:{
   width: '120px',
@@ -202,7 +209,9 @@ favFriend:{
 directions:{
   fontFamily:'Roboto',
   textDecoration:'none',
-  textAlign: 'center'
+  textAlign: 'center',
+  color: 'white',
+  textShadow: '0px 0px 10px #B24036'
 },
 tickIcon: {
   display: 'inline-block',
@@ -212,6 +221,13 @@ tickIcon: {
 recipeImage: {
   maxWidth: '100vw',
   height: 'auto',
+},
+inspListItem: {
+  color: 'white'
+},
+chatInput: {
+  width: '70vw',
+  margin: '10px'
 }
 }
 module.exports = style;

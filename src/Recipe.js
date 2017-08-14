@@ -27,8 +27,8 @@ class Recipe extends Component {
       index = index.toFixed(2);
       // console.log(index);
       return (
-        <ListItem key={ index }>
-          <FontIcon className="material-icons">local_grocery_store</FontIcon> {ingredient}
+        <ListItem style={style.inspListItem} key={ index }>
+          <FontIcon style={style.inspListItem} className="material-icons">local_grocery_store</FontIcon> {ingredient}
         </ListItem>
       )});
 
@@ -42,7 +42,7 @@ class Recipe extends Component {
           </div>
 
           <List style={style.inspIngredients}>
-            <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Ingredients</h2>
+            <h2><FontIcon style={style.inspListItem} className="material-icons md-dark">content_paste</FontIcon> Ingredients</h2>
             { ingredients }
           </List>
         </div>
