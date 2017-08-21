@@ -10,10 +10,8 @@ var User = require('./model/users');
 //and create our instances
 var app = express();
 var router = express.Router();
-//set our port to either a predetermined port number if you have set
-//it up, or 3001
-var port = process.env.API_PORT || 3001;
-var socketport = 8080;
+//set our port to either a predetermined port number or 5000
+var port = process.env.PORT || 5000;
 
 var request = require('request');
 var graph = require('fbgraph');
@@ -21,9 +19,13 @@ var graph = require('fbgraph');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+var cheerio = require('cheerio');
+
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/comment');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/comment', {
+  useMongoClient: true
+});
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -46,6 +48,13 @@ app.use(function(req, res, next) {
  res.setHeader('Cache-Control', 'no-cache');
  next();
 });
+
+
+
+// Express only serves static assets in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
+}
 
 
 //*********** SOCKETS API ******************
@@ -119,8 +128,8 @@ io.on('connection', function(client){
 
 });
 
-io.listen(socketport);
-console.log(`socket running on port ${socketport}`);
+// io.listen(port);
+console.log(`socket running on port ${port}`);
 
 
 
@@ -159,19 +168,40 @@ router.route('/comments')
    });
  });
 
+//End point to get the meta description - server find the recipe, then requests source URL,
+//then using jQuery lib Cheerio finds meta description and adds it to the recipe record
+router.route('/recipemeta')
+  .post( function(req, response){
+    let recId = req.body.recId;
+    // console.log(recId);
+
+    Recipe.find({ _id: recId }).exec(function(err, recipe){
+      // console.log(recipe[0]);
+      var recDir = recipe[0].directions;
+      // console.log(recDir);
+
+      request(recDir, function(er, resp, html) {
+        var $ = cheerio.load(html);
+        var desc;
+        desc = $('#metaDescription').prop('content');
+        // console.log('desc: ',desc);
+        if (!desc) {
+          desc = $("meta[property='og:description']").prop('content');
+        }
+        Recipe.update({ _id: recId }, { $set: { description:  desc }},function(err) {
+          if (err)
+          response.send(err);
+          response.send(recipe[0]._id);
+        });
+      });
+
+    });
+  });
+
 //adding the /recipe route to our /api router - this will recieve an id for API call and save the response to database
 router.route('/recipes')
   //retrieve the recipe from the database
   // .get(function(req, res) {
-  //   let recipeId = req.params.id;
-  //   console.log(recipeId);
-  //   //looks at our Comment Schema
-  //   Recipe.find({_id:recipeId}).exec(function(err, recipe){
-  //    if (err)
-  //      res.send(err);
-  //    //responds with a json object of our database comments.
-  //    res.json(recipe);
-  //   });
   // })
   // Get the recipe from API and post it to database reply back with recipe database ID
   .post(function(req, res) {
@@ -196,12 +226,19 @@ router.route('/recipes')
         let ingLength = recipe.ingredients.length;
         recipe.ingCheck = new Array(ingLength).fill(0);
         recipe.directions = body.recipe.source_url;
+        // console.log(recipe.directions);
         recipe.title = body.recipe.title;
         recipe.socialRank = body.recipe.social_rank;
         recipe.owner = userId;
+        recipe.description = "";
+        // console.log(recipe.description);
+        // recipe.description = "Another test";
+
+
         recipe.save(function(err, model){
           if(err){
             res.send(err);
+            return
           }
           res.send(recipe._id);
         });
@@ -227,16 +264,16 @@ router.route('/recipes/:id')
     let recId = req.params.id;
     let ingIndex = req.body.ingIndex;
     let ingState = req.body.ingState;
-    console.log('ingIndex: ', ingIndex,' ing State: ', ingState);
+    // console.log('ingIndex: ', ingIndex,' ing State: ', ingState);
     let indexString = 'ingCheck.'+ingIndex;
-    console.log('indexString: ', indexString);
+    // console.log('indexString: ', indexString);
     let updateValue = {};
     if(ingState === 0){
       updateValue[indexString] = 1;
     } else {
       updateValue[indexString] = 0;
     }
-    console.log('update value: ', updateValue);
+    // console.log('update value: ', updateValue);
 
     let favName = req.body.favName;
     let favFriendId = 'facebook|'+req.body.favFriendId;
@@ -244,7 +281,7 @@ router.route('/recipes/:id')
     let recName = req.body.recName;
 
     if (!favName){
-      console.log('passed the test');
+      // console.log('passed the test');
       Recipe.update({ _id: recId }, { $set: updateValue },function(err) {
         if (err)
         res.send(err);
@@ -308,7 +345,7 @@ router.route('/recipes/:id')
       });
 
       function graphCall(id, access_token, pictureLarge){
-        console.log('graphCall check: ',id);
+        // console.log('graphCall check: ',id);
         let graphOptions = {
             timeout:  3000
           , pool:     { maxSockets:  Infinity }
@@ -336,6 +373,7 @@ router.route('/recipes/:id')
 //post or get user data used for linking recipes
 router.route('/users')
   //retrieve user info
+
   .get(function(req, res) {
     // console.log(req.query.fbId);
     //looks at our User Schema
@@ -343,6 +381,7 @@ router.route('/users')
      if (err)
        res.send(err);
      //responds with a json object
+    //  console.log(user);
      res.json(user);
    });
   })
@@ -360,6 +399,7 @@ router.route('/users')
     });
   })
   .put(function(req, res){
+    // console.log(req.body.id);
     let id = req.body.id;
     let recId = req.body.recId;
     let recName = req.body.recName;
@@ -399,6 +439,6 @@ router.route('/users')
 //Use our router configuration when we call /api
 app.use('/api', router);
 //starts the server and listens for requests
-app.listen(port, function() {
+http.listen(port, function() {
  console.log(`api running on port ${port}`);
 });

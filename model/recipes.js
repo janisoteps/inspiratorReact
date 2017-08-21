@@ -14,7 +14,8 @@ var recipeSchema = new Schema({
   title: String,
   socialRank: Number,
   owner: String,
-  friends: Array
+  friends: Array,
+  description: String
 });
 //export our module to use in server.js
 module.exports = mongoose.model('Recipes', recipeSchema);

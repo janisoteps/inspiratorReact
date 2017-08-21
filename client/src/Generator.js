@@ -4,7 +4,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 // Needed for onTouchTap
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
-import axios from 'axios';
+// import axios from 'axios';
+// const endPoint = 'http://localhost:5000';
 
 class Generator extends Component {
   constructor(props) {
@@ -42,14 +43,29 @@ class Generator extends Component {
     let userId = this.props.user[0]._id;
     // console.log(userId);
 
-    axios.put('http://localhost:3001/api/users', {
+    let recYesBody = {
       id: userId,
       recId: id,
       recName: recipeName
-    }).then(res => {
-      // console.log(res.data);
-      // this.setState({ data: res.data });
-    });
+    };
+
+    // axios.put(endPoint+'/api/users', {
+    //   id: userId,
+    //   recId: id,
+    //   recName: recipeName
+    // }).then(res => {
+    //   // console.log(res.data);
+    //   // this.setState({ data: res.data });
+    // });
+
+    fetch('/api/users', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(recYesBody)
+    })
 
     this.goTo(recipePath);
   }
@@ -58,7 +74,7 @@ class Generator extends Component {
   render() {
     const isRecipe = this.props.recipe._id;
     // console.log(this.props.recipe._id);
-    // const user = this.props.user;
+    // const isLoading = this.state.spinner;
     // console.log(user);
     return (
       <div>

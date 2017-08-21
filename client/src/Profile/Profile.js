@@ -9,8 +9,8 @@ import FontIcon from 'material-ui/FontIcon';
 import Subheader from 'material-ui/Subheader';
 import FlatButton from 'material-ui/FlatButton';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import axios from 'axios';
-
+// import axios from 'axios';
+// const endPoint = 'http://localhost:5000';
 
 
 class Profile extends Component {
@@ -41,10 +41,14 @@ class Profile extends Component {
 
   //Get Mongo data about user to retrieve recipe links
   getMongoProfile(fbId) {
-    axios.get('http://localhost:3001/api/users', { params: { fbId: fbId } })
+    // console.log('fbId: ',fbId);
+    let fetchurl = '/api/users?fbId='+fbId;
+    fetch(fetchurl)
+    .then(res => res.json())
     .then(res => {
-      this.setState({ user: res.data[0] });
-      console.log(res.data[0]);
+      // console.log(res);
+      this.setState({ user: res[0] });
+      // console.log(res[0]);
       this.getFriends();
     });
   }
@@ -60,32 +64,43 @@ class Profile extends Component {
     // console.log('getFriends runs');
     // console.log(this.state);
     var userId = this.state.profile.sub;
-    let friendEndPoint = 'http://localhost:3001/api/friends/'+userId;
+    let friendEndPoint = '/api/friends/'+userId;
     //get friend list from server
-    axios.get(friendEndPoint)
+    fetch(friendEndPoint)
+    .then(res => res.json())
     .then(res => {
       // console.log(res);
-      let friendData = res.data.friends;
+      let friendData = res.friends;
       // console.log('Friends: ',friendData);
       this.setState({ friends: friendData });
       // console.log('Picture: ', res.data.picture);
-      this.setState({ picture: res.data.picture});
+      this.setState({ picture: res.picture});
     })
   }
 
   //Add a FB friend that's also using app as a favorite
   addFavorite(favObj){
+    // console.log(favObj);
     let favFriendId = favObj.favFriendId;
     let favName = favObj.favName;
     // console.log('user: ',this.state.user);
     let userId = this.state.user._id;
+    let putbody = {id: userId,
+    favFriendId: favFriendId,
+    favName: favName};
+    // console.log(putbody);
 
-    axios.put('http://localhost:3001/api/users', {
-      id: userId,
-      favFriendId: favFriendId,
-      favName: favName
-    }).then(res => {
-      console.log(res);
+    fetch('/api/users', {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(putbody)
+    })
+    // .then(res => res.json())
+    .then(res => {
+      // console.log(res);
       // this.setState({ data: res.data });
       this.getMongoProfile(this.state.user.fbId);
     });

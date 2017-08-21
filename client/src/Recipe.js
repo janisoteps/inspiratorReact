@@ -10,6 +10,7 @@ class Recipe extends Component {
     let recipeTitle = this.props.recipe.title;
     let recipeImage = this.props.recipe.image;
     let socialRank = this.props.recipe.socialRank;
+    let recipeDesc = this.props.recipe.description;
     if(socialRank){
       socialRank = socialRank.toFixed(2);
     }
@@ -38,7 +39,8 @@ class Recipe extends Component {
           <div style={ style.recipeTitle }>
             <h1> { recipeTitle } </h1>
             <img style={style.recipeImage} src={ recipeImage } alt="Recipe"></img>
-            <h3> This recipe is liked by {socialRank}% of people.</h3>
+            <h4> This recipe is liked by {socialRank}% of people.</h4>
+            <p style={style.recipeDesc}> {recipeDesc}</p>
           </div>
 
           <List style={style.inspIngredients}>

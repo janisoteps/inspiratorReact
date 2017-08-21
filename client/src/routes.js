@@ -7,7 +7,7 @@ import Auth from './Auth/Auth';
 import history from './history';
 import Profile from './Profile/Profile';
 import RecipePlan from './RecipePlan';
-import AddFriends from './AddFriends';
+const endPoint = 'http://localhost:5000';
 
 
 const auth = new Auth();
@@ -25,7 +25,7 @@ export const makeMainRoutes = () => {
         <Route exact path="/" render={(props) => <Inspirator
            auth={auth}
            {...props}
-           url='http://localhost:3001/api/comments' />}
+           url={endPoint+'/api/comments'} />}
          />
 
         <Route path="/home" render={(props) => <Home auth={auth} {...props} />} />
@@ -50,19 +50,11 @@ export const makeMainRoutes = () => {
               <RecipePlan
                 auth={auth}
                 {...props}
-                url='http://localhost:3001/api/comments'
+                url={endPoint+'/api/comments'}
                 pollInterval={10000} />
             )
           )} />
 
-        <Route path="/addfriends/:id" render={(props) => (
-          !auth.isAuthenticated() ? (
-            <Redirect to="/"/>
-          ) : (
-            <AddFriends history={history} auth={auth} {...props} url='http://localhost:3001/api/comments'
-            pollInterval={10000} />
-          )
-        )} />
       </div>
     </BrowserRouter>
   );

@@ -7,9 +7,10 @@ import FontIcon from 'material-ui/FontIcon';
 import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import axios from 'axios';
+// import axios from 'axios';
 import './RecipePlan.css';
 import RecipeChat from './RecipeChat';
+// const endPoint = 'http://localhost:5000';
 
 
 class RecipePlan extends Component {
@@ -26,13 +27,14 @@ class RecipePlan extends Component {
 
   //Request recipe from database based on it's id
   getRecipe(id) {
-    let recipeGet = 'http://localhost:3001/api/recipes/'+id;
+    let recipeGet = '/api/recipes/'+id;
     // console.log(recipeGet);
     //get the recipe from mongo based on path that contains id parameter
-    axios.get(recipeGet)
+    fetch(recipeGet)
+    .then(res => res.json())
     .then(res => {
-    //  console.log(res.data[0]);
-     this.setState({ recipe: res.data[0]});
+    //  console.log(res[0]);
+     this.setState({ recipe: res[0]});
     })
   }
 
@@ -68,29 +70,57 @@ class RecipePlan extends Component {
   ingCheck(index){
     // console.log('clicked', index);
     // console.log(this.state.recipe._id);
-    let url = 'http://localhost:3001/api/recipes/'+this.state.recipe._id;
+    let url = '/api/recipes/'+this.state.recipe._id;
     let ingIndex = index;
     let ingState = this.state.recipe.ingCheck[ingIndex];
     // console.log(ingState);
     // console.log(url);
-    axios.put(url, {
+
+    let ingCheckCody = {
       ingIndex: ingIndex,
       ingState: ingState
+    }
+
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(ingCheckCody)
     }).then(res => {
       // console.log(res);
       this.getRecipe(this.props.match.params.id);
     });
+
+    // axios.put(url, {
+    //   ingIndex: ingIndex,
+    //   ingState: ingState
+    // }).then(res => {
+    //   // console.log(res);
+    //   this.getRecipe(this.props.match.params.id);
+    // });
   }
 
   //Retrieve users favorited friends
   getFavs(fbookId, counter){
     let fbId = fbookId;
-    axios.get('http://localhost:3001/api/users', { params: { fbId: fbId } })
+    let getFavsUrl = '/api/users?fbId='+fbId;
+
+    fetch(getFavsUrl)
+    .then(res => res.json())
     .then(res => {
-      this.setState({ user: res.data[0] });
+      this.setState({ user: res[0] });
       // console.log(res.data[0]);
       this.ownerCheck();
     });
+
+    // axios.get(endPoint+'/api/users', { params: { fbId: fbId } })
+    // .then(res => {
+    //   this.setState({ user: res.data[0] });
+    //   // console.log(res.data[0]);
+    //   this.ownerCheck();
+    // });
     // console.log(this.state.user.favFriends);
   }
 
@@ -99,12 +129,31 @@ class RecipePlan extends Component {
     let favFriendId = favObj.favFriendId;
     let favName = favObj.favName;
     let recipeId = this.state.recipe._id;
-    let url = 'http://localhost:3001/api/recipes/'+recipeId;
+    let url = '/api/recipes/'+recipeId;
     let recName = this.state.recipe.title;
-    axios.put(url, {
+
+    let addFavBody = {
       favFriendId: favFriendId,
       favName: favName,
       recName: recName
+    };
+
+    // axios.put(url, {
+    //   favFriendId: favFriendId,
+    //   favName: favName,
+    //   recName: recName
+    // }).then(res => {
+    //   // console.log(res);
+    //   this.getRecipe(this.props.match.params.id);
+    // });
+
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(addFavBody)
     }).then(res => {
       // console.log(res);
       this.getRecipe(this.props.match.params.id);
@@ -146,6 +195,7 @@ class RecipePlan extends Component {
     let recipeTitle = this.state.recipe.title;
     let recipeImage = this.state.recipe.image;
     let directions = this.state.recipe.directions;
+    let description = this.state.recipe.description;
     if (!recipeTitle){
       return(
         <h1>Loading</h1>
@@ -207,7 +257,7 @@ class RecipePlan extends Component {
       favlist = 'Loading';
     }
     //If recipe has friends added to it, build a list of them
-    if(this.state.recipe.friends){
+    if(this.state.recipe.friends.length > 0){
       var friendlist = this.state.recipe.friends.map(buddy => {
         // if (buddy.favName === )
         return (
@@ -221,11 +271,7 @@ class RecipePlan extends Component {
           </div>
       )});
     } else {
-      friendlist = function(){
-        return (
-          <h3>No Friends Added Yet</h3>
-        )
-      };
+      friendlist = null;
     }
 
 
@@ -241,16 +287,19 @@ class RecipePlan extends Component {
               <div style={ style.recipeTitle }>
                 <h1> { recipeTitle } </h1>
                 <img style={style.recipeImage} src={ recipeImage } alt="Recipe"></img>
+                <p style={style.recipeDesc}> {description}</p>
               </div>
               <div style={style.directions}>
                 <a href={directions} target="blank" style={style.directions}><h2>Click here to read instructions</h2></a>
               </div>
-              <Paper style={style.profileRecOwn}>
-                <List style={style.recipeIngredients}>
-                  <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Friends Also On This Recipe</h2>
-                  { friendlist }
-                </List>
-              </Paper>
+              {friendlist && (
+                  <Paper style={style.profileRecOwn}>
+                    <List style={style.recipeIngredients}>
+                      <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Friends Also On This Recipe</h2>
+                      { friendlist }
+                    </List>
+                  </Paper>
+                )}
               <Paper style={style.profileRecOwn}>
                 <List style={style.recipeIngredients}>
                   <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Friends To Add To Recipe</h2>

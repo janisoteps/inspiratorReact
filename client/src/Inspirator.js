@@ -1,14 +1,13 @@
 //Inspirator.js
 import React, { Component } from 'react';
-// import CommentList from './CommentList';
-// import CommentForm from './CommentForm';
 import Generator from './Generator';
 import Recipe from './Recipe';
-import axios from 'axios';
+// import axios from 'axios';
 import Login from './Login';
 import Header from './Header';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import style from './style';
+// const endPoint = 'http://localhost:5000';
 
 class Inspirator extends Component {
  constructor(props) {
@@ -18,22 +17,31 @@ class Inspirator extends Component {
   //  this.handleCommentSubmit = this.handleCommentSubmit.bind(this);
    this.handleRecipeGen = this.handleRecipeGen.bind(this);
    this.getRecipe = this.getRecipe.bind(this);
+   this.getMetaData = this.getMetaData.bind(this);
  }
 
 //Once the random id is received from generator post that ID to server to call external API to get the recipe
- handleRecipeGen(id) {
+handleRecipeGen(id) {
+  this.setState({ spinner: true });
   //  console.log(id);
   //post the generated id to server
-   axios.post('http://localhost:3001/api/recipes', id)
+   fetch('/api/recipes', {
+     method: 'POST',
+     headers: {
+       'Accept': 'application/json',
+       'Content-Type': 'application/json'
+     },
+     body: JSON.stringify(id)
+   })
+   .then(res => res.json())
    .then(res => {
+    //  console.log(res);
      //server replies with the mongo id that the recipe is saved with
-    //  console.log(res.data);
-     //generate express API path with mongo id parameter and call getRecipe function with that path
-     let recipeGet = 'http://localhost:3001/api/recipes/'+res.data;
-     this.getRecipe(recipeGet);
+     this.getMetaData(res);
    })
    .catch(err => {
      console.error(err);
+     window.location = '/';
    });
  }
 
@@ -41,13 +49,40 @@ class Inspirator extends Component {
  getRecipe(recipeGet){
    if(this.unmounted) return
   //  console.log(recipeGet);
-   axios.get(recipeGet)
+   fetch(recipeGet)
+   .then(res => res.json())
    .then(res => {
-    //  console.log(" res.data", res.data)
+    //  console.log(" res.data", res);
     //  this.setState({ data: res.data });
     // console.log(res.data[0]);
-    this.setState({ recipe: res.data[0]});
+    this.setState({ recipe: res[0]});
+    this.setState({ spinner: false });
+    // this.getMetaData(recipe._id, recipe.directions);
    })
+ }
+
+ //Post to another API endpoint to carry out website meta data scrub and get the description
+ getMetaData(recId){
+   if(this.unmounted) return
+   var metaBody = {recId: recId};
+
+   fetch('/api/recipemeta', {
+     method: 'POST',
+     headers: {
+       'Accept': 'application/json',
+       'Content-Type': 'application/json'
+     },
+     body: JSON.stringify(metaBody)
+   })
+   .then(res => res.json())
+   .then(res => {
+    //  console.log(res);
+     //server replies with the mongo id that the recipe is saved with
+    //  console.log(res.data);
+     //generate express API path with mongo id parameter and call getRecipe function with that path
+     let recipeGet = '/api/recipes/'+res;
+     this.getRecipe(recipeGet);
+   });
  }
 
  //when app mounts get the user profile, check if mongo has a copy of it and if not copy id and name to mongo
@@ -61,30 +96,43 @@ class Inspirator extends Component {
   }
   const getProfile = this.props.auth.getProfile;
   getProfile((err, profile) => {
-      //  this.setState({ profile: profile });
       //  console.log(profile);
       //  console.log(this.state.profile);
+      var getProfileUrl = '/api/users?fbId='+profile.sub;
+
        //try to find a user with the fb ID of the logged in user
-       axios.get('http://localhost:3001/api/users', { params: { fbId: profile.sub } })
+      //  axios.get(endPoint+'/api/users', { params: { fbId: profile.sub } })
+
+       fetch(getProfileUrl)
+       .then(res => res.json())
        .then(res => {
         //  console.log(" res.data", res.data.length);
          //if the response from server doesn't contain any user data, post the user details
-         if(res.data.length === 0){
+         if(res.length === 0){
            let userPost = {};
            userPost.name = profile.name;
            userPost.fbId = profile.sub;
            userPost.recOwner = [];
            userPost.recFriend = [];
-           axios.post('http://localhost:3001/api/users', userPost)
+           //axios.post(endPoint+'/api/users', userPost)
+
+           fetch('/api/users', {
+             method: 'POST',
+             headers: {
+               'Accept': 'application/json',
+               'Content-Type': 'application/json'
+             },
+             body: JSON.stringify(userPost)
+           })
            .then(res => {
-              this.setState({ user: res.data });
+              this.setState({ user: res });
               // console.log(" res.data", res.data);
            })
            .catch(err => {
              console.error(err);
            });
          }
-         this.setState({ user: res.data });
+         this.setState({ user: res });
        })
      });
  }
@@ -102,10 +150,20 @@ class Inspirator extends Component {
  }
 
  render() {
-  //  console.log(this.state.recipe);
+
+   //  console.log(this.state.recipe);
+   var isLoading = this.state.spinner;
+  //  console.log('spinner is on: ', isLoading)
    return (
      <MuiThemeProvider>
        <div>
+         { isLoading && (
+           <div style={style.spinner}>
+             <center>
+               <h2>Loading...</h2>
+             </center>
+           </div>
+         )}
          <Header />
          <Login history={this.props.history} auth={this.props.auth}/>
          <div className="recipeGenerator">

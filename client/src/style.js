@@ -90,10 +90,20 @@ const style = {
   bottom: '15px'
  },
  recipeTitle: {
+   marginLeft: '5px',
+   marginRight: '5px',
+   marginTop: '8px',
    fontFamily:'Roboto',
    textAlign: 'center',
    color: '#F2EEF1',
-   textShadow: '0px 0px 6px #282623'
+   textShadow: '0px 0px 6px #282623',
+   backgroundColor: 'rgba(0,0,0,0.7) ',
+   paddingBottom: '10px',
+   borderRadius: '3px'
+ },
+ recipeDesc: {
+   marginRight: '5px',
+   marginLeft: '5px'
  },
  noRecipe: {
    fontFamily:'Roboto',
@@ -175,9 +185,16 @@ recipeIngredients:{
   fontFamily:'Roboto'
 },
 inspIngredients:{
+  marginTop:'10px',
+  marginRight: '5px',
+  marginLeft: '5px',
   fontFamily:'Roboto',
-  marginLeft: '10vw',
-  color: 'white'
+  paddingLeft: '10vw',
+  color: 'white',
+  backgroundColor: 'rgba(0,0,0,0.7) ',
+  paddingBottom: '10px',
+  paddingTop: '10px',
+  borderRadius: '3px'
 },
 gotIngredient:{
   width: '120px',
@@ -219,7 +236,7 @@ tickIcon: {
   verticalAlign: 'middle'
 },
 recipeImage: {
-  maxWidth: '100vw',
+  maxWidth: '100%',
   height: 'auto',
 },
 inspListItem: {
@@ -228,6 +245,19 @@ inspListItem: {
 chatInput: {
   width: '70vw',
   margin: '10px'
+},
+spinner: {
+  position: 'fixed',
+  width: '100vw',
+  height: '100vh',
+  top: '0',
+  left: '0',
+  backgroundColor: 'rgba(20,20,20,0.8) ',
+  fontFamily:'Roboto',
+  fontSize: '30px',
+  color: 'white',
+  paddingTop: '40vh',
+  zIndex: '99999'
 }
 }
 module.exports = style;

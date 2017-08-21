@@ -1,6 +1,7 @@
 import openSocket from 'socket.io-client';
-const socket = openSocket('http://localhost:8080');
-
+// const socket = openSocket('http://localhost:5000');
+let port = process.env.PORT || 5000;
+const socket = openSocket(window.location.hostname +':'+ port);
 
 //Function to subscribe to chat messages on recipe, ingests recipe id sent by component and callback function
 function subscribeToChat(recId, callBack) {
