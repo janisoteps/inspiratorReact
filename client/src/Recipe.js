@@ -46,6 +46,7 @@ class Recipe extends Component {
           <List style={style.inspIngredients}>
             <h2><FontIcon style={style.inspListItem} className="material-icons md-dark">content_paste</FontIcon> Ingredients</h2>
             { ingredients }
+            <p>Recipe provided by Food2Fork.com</p>
           </List>
         </div>
       </MuiThemeProvider>

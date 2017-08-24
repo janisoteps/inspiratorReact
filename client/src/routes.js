@@ -7,8 +7,8 @@ import Auth from './Auth/Auth';
 import history from './history';
 import Profile from './Profile/Profile';
 import RecipePlan from './RecipePlan';
-const endPoint = 'http://localhost:5000';
-
+// const endPoint = 'http://localhost:5000';
+import RecipeSearch from './RecipeSearch';
 
 const auth = new Auth();
 
@@ -24,9 +24,16 @@ export const makeMainRoutes = () => {
       <div>
         <Route exact path="/" render={(props) => <Inspirator
            auth={auth}
-           {...props}
-           url={endPoint+'/api/comments'} />}
+           {...props} />}
          />
+
+        <Route path="/ingredients" render={(props) => (
+            !auth.isAuthenticated() ? (
+              <Redirect to="/"/>
+            ) : (
+              <RecipeSearch history={history} auth={auth} {...props} />
+            )
+          )} />
 
         <Route path="/home" render={(props) => <Home auth={auth} {...props} />} />
 
@@ -50,8 +57,7 @@ export const makeMainRoutes = () => {
               <RecipePlan
                 auth={auth}
                 {...props}
-                url={endPoint+'/api/comments'}
-                pollInterval={10000} />
+                 />
             )
           )} />
 

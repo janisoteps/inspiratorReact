@@ -1,0 +1,61 @@
+#optionIngredients{
+  width: 90%;
+  height: 35vh;
+  min-height: 200px;
+  margin: 0 auto;
+  margin-top: 40px;
+  background-color: rgba(10, 140, 210, 0.2);
+  color: white;
+  border-radius: 3px;
+  text-align: center;
+  font-size: 30px;
+  padding-top: 38px;
+  box-shadow: 0px 0px 12px #000000;
+  transition: all 0.5s;
+  font-family:'Roboto';
+}
+
+#optionIngredients:hover{
+  background-color: rgba(50, 175, 242, 0.4);
+  transition: all 0.5s;
+}
+
+
+#optionRandom{
+  width: 90%;
+  height: 35vh;
+  min-height: 260px;
+  margin: 0 auto;
+  margin-top: 30px;
+  background-color: rgba(122, 204, 46, 0.2);
+  color: white;
+  border-radius: 3px;
+  text-align: center;
+  font-size: 30px;
+  padding-top: 20px;
+  box-shadow: 0px 0px 12px #000000;
+  transition: all 0.5s;
+  font-family:'Roboto';
+}
+
+#optionRandom:hover{
+  background-color: rgba(148, 232, 71, 0.4);
+  transition: all 0.5s;
+}
+
+#nothingFound{
+  width: 90%;
+  height: 50vh;
+  min-height: 250px;
+  margin: 0 auto;
+  margin-top: 30px;
+  background-color: rgba(229, 74, 22, 0.2);
+  color: white;
+  border-radius: 3px;
+  text-align: center;
+  font-size: 30px;
+  padding-top: 12vh;
+  box-shadow: 0px 0px 12px #000000;
+  transition: all 0.5s;
+  font-family:'Roboto';
+}

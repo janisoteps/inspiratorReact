@@ -93,11 +93,13 @@ const style = {
    marginLeft: '5px',
    marginRight: '5px',
    marginTop: '8px',
+   marginBottom: '15px',
    fontFamily:'Roboto',
    textAlign: 'center',
    color: '#F2EEF1',
    textShadow: '0px 0px 6px #282623',
-   backgroundColor: 'rgba(0,0,0,0.7) ',
+   backgroundColor: 'rgba(0,0,0,0.5) ',
+   padding: '5px',
    paddingBottom: '10px',
    borderRadius: '3px'
  },
@@ -156,30 +158,43 @@ blankFooter: {
 },
 yesButton: {
   width: '50%',
-  zIndex: '10000'
+  zIndex: '90000'
 },
 yesContainer:{
   width: '40vw',
   position: 'fixed',
   bottom: '15px',
-  right: '5px'
+  right: '5px',
+  zIndex: '90000'
 },
 noButton: {
   width: '50%',
-  zIndex: '10000'
+  zIndex: '90000'
 },
 noContainer:{
   width: '40vw',
   position: 'fixed',
   bottom: '15px',
-  left: '5px'
+  left: '5px',
+  zIndex: '90000'
 },
 profileRecOwn:{
   maxHeight: '45vh',
   overflow: 'scroll',
-  backgroundColor: '#DCECFF',
+  backgroundColor: 'rgba(255,255,255,0.8)',
+  color: 'black',
   marginBottom: '15px',
-  paddingLeft: '5px'
+  paddingLeft: '5px',
+  borderRadius: '3px'
+},
+ingSearchContainer:{
+  overflow: 'scroll',
+  backgroundColor: 'rgba(255,255,255,0.7)',
+  color: 'black',
+  fontFamily:'Roboto',
+  marginTop: '15px',
+  padding: '15px',
+  borderRadius: '3px'
 },
 recipeIngredients:{
   fontFamily:'Roboto'
@@ -191,7 +206,7 @@ inspIngredients:{
   fontFamily:'Roboto',
   paddingLeft: '10vw',
   color: 'white',
-  backgroundColor: 'rgba(0,0,0,0.7) ',
+  backgroundColor: 'rgba(0,0,0,0.5) ',
   paddingBottom: '10px',
   paddingTop: '10px',
   borderRadius: '3px'
@@ -258,6 +273,11 @@ spinner: {
   color: 'white',
   paddingTop: '40vh',
   zIndex: '99999'
+},
+ingTextField: {
+  marginRight: '15%',
+  marginLeft: '15%',
+  width: '70%'
 }
 }
 module.exports = style;

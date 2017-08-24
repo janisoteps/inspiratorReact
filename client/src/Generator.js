@@ -49,15 +49,6 @@ class Generator extends Component {
       recName: recipeName
     };
 
-    // axios.put(endPoint+'/api/users', {
-    //   id: userId,
-    //   recId: id,
-    //   recName: recipeName
-    // }).then(res => {
-    //   // console.log(res.data);
-    //   // this.setState({ data: res.data });
-    // });
-
     fetch('/api/users', {
       method: 'PUT',
       headers: {
@@ -78,7 +69,7 @@ class Generator extends Component {
     // console.log(user);
     return (
       <div>
-        {
+        {/* {
           !isRecipe && (
             <div>
               <RaisedButton
@@ -91,7 +82,7 @@ class Generator extends Component {
                 label="Generate Recipe"/>
             </div>
           )
-        }
+        } */}
         {
           isRecipe && (
 

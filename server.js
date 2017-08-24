@@ -205,44 +205,62 @@ router.route('/recipes')
   // })
   // Get the recipe from API and post it to database reply back with recipe database ID
   .post(function(req, res) {
-    var recipe = new Recipe();
+    // var recipe = new Recipe();
     let id = req.body.recipeId;
     let userId = req.body.userId;
     // console.log(id);
 
-    var recipeUrl = "http://food2fork.com/api/get?key=19b9f7e3df065a89d6f1f874374989a3&rId="+id;
+    // var recipeUrl = "http://food2fork.com/api/get?key=19b9f7e3df065a89d6f1f874374989a3&rId="+id;
 
-    request(recipeUrl, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        // console.log(body);
-        body = JSON.parse(body);
-        // console.log(body);
-        recipe.image = body.recipe.image_url;
-        recipe.ingredients = body.recipe.ingredients;
-        if(!recipe.ingredients){
-          res.send(error);
-          return
-        }
-        let ingLength = recipe.ingredients.length;
-        recipe.ingCheck = new Array(ingLength).fill(0);
-        recipe.directions = body.recipe.source_url;
-        // console.log(recipe.directions);
-        recipe.title = body.recipe.title;
-        recipe.socialRank = body.recipe.social_rank;
-        recipe.owner = userId;
-        recipe.description = "";
-        // console.log(recipe.description);
-        // recipe.description = "Another test";
+    function getRec(id, userId){
+      var recipeUrl = "http://food2fork.com/api/get?key=19b9f7e3df065a89d6f1f874374989a3&rId="+id;
 
-
-        recipe.save(function(err, model){
-          if(err){
-            res.send(err);
+      request(recipeUrl, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          var recipe = new Recipe();
+          // console.log(body);
+          body = JSON.parse(body);
+          // console.log(body);
+          recipe.image = body.recipe.image_url;
+          recipe.ingredients = body.recipe.ingredients;
+          if(!recipe.ingredients){
+            res.send(error);
             return
           }
-          res.send(recipe._id);
-        });
-      }
+          let ingLength = recipe.ingredients.length;
+          recipe.ingCheck = new Array(ingLength).fill(0);
+          recipe.directions = body.recipe.source_url;
+          // console.log(recipe.directions);
+          recipe.title = body.recipe.title;
+          recipe.socialRank = body.recipe.social_rank;
+          recipe.owner = userId;
+          recipe.description = "";
+          // console.log(recipe.description);
+          // recipe.description = "Another test";
+
+          recipe.save(function(err, model){
+            if(err){
+              res.send(err);
+              return
+            }
+              res.send(recipe._id);
+            // res.send(recipe._id);
+          });
+        }
+      });
+    }
+    getRec(id, userId);
+  });
+
+//search for recipes based on ingredients
+router.route('/recipesearch')
+  .post(function(req, res){
+    let ingquery = req.body.ingquery;
+    console.log(ingquery);
+    let queryUrl = 'http://food2fork.com/api/search?key=19b9f7e3df065a89d6f1f874374989a3&q='+ingquery;
+    request(queryUrl, function (error, response, body) {
+      body = JSON.parse(body)
+      res.send(body);
     });
   });
 

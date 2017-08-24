@@ -1,0 +1,46 @@
+#ingSearchSubmit{
+  width: 70%;
+  margin: 0 auto;
+  height: 60px;
+  background-color: #9ccc45;
+  color: white;
+  border-radius: 3px;
+  text-align: center;
+  font-size: 30px;
+  padding-top: 15px;
+  box-shadow: 0px 0px 8px #888888;
+  transition: all 0.5s;
+}
+
+#ingSearchSubmit:hover{
+  background-color: #80ad58;
+  transition: all 0.5s;
+}
+
+a{
+  text-decoration: none;
+}
+
+#changeIngredients{
+  width: 70%;
+  max-width: 500px;
+  min-width: 340px;
+  margin: 0 auto;
+  height: 60px;
+  background-color: #247daf;
+  color: white;
+  border-radius: 3px;
+  text-align: center;
+  font-size: 30px;
+  padding-top: 15px;
+  box-shadow: 0px 0px 8px #606060;
+  transition: all 0.5s;
+  font-family:'Roboto';
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#changeIngredients:hover{
+  background-color: #1f9be2;
+  transition: all 0.5s;
+}

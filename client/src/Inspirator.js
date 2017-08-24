@@ -2,22 +2,27 @@
 import React, { Component } from 'react';
 import Generator from './Generator';
 import Recipe from './Recipe';
-// import axios from 'axios';
+import './inspirator.css';
 import Login from './Login';
 import Header from './Header';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import style from './style';
-// const endPoint = 'http://localhost:5000';
+import Spinner from './Spinner';
+
 
 class Inspirator extends Component {
  constructor(props) {
    super(props);
-   this.state = { data: [], recipeId: '', recipe: {}, profile: {}, user: {} };
-  //  this.loadCommentsFromServer = this.loadCommentsFromServer.bind(this);
-  //  this.handleCommentSubmit = this.handleCommentSubmit.bind(this);
+   this.state = { data: [], recipeId: '', recipe: {}, profile: {}, user: {}, pickOption: true };
    this.handleRecipeGen = this.handleRecipeGen.bind(this);
    this.getRecipe = this.getRecipe.bind(this);
    this.getMetaData = this.getMetaData.bind(this);
+   this.goTo = this.goTo.bind(this);
+   this.generateId = this.generateId.bind(this);
+ }
+
+ goTo(route) {
+   this.props.history.replace(`/${route}`)
  }
 
 //Once the random id is received from generator post that ID to server to call external API to get the recipe
@@ -56,6 +61,7 @@ handleRecipeGen(id) {
     //  this.setState({ data: res.data });
     // console.log(res.data[0]);
     this.setState({ recipe: res[0]});
+    this.setState({ pickOption: false });
     this.setState({ spinner: false });
     // this.getMetaData(recipe._id, recipe.directions);
    })
@@ -83,6 +89,13 @@ handleRecipeGen(id) {
      let recipeGet = '/api/recipes/'+res;
      this.getRecipe(recipeGet);
    });
+ }
+
+ //Generate a random ID for recipe retrieval
+ generateId(){
+   let id = Math.floor((Math.random() * 40000) + 10000);
+   let recGenObj = { recipeId: id , userId: this.state.user[0]._id  };
+   this.handleRecipeGen(recGenObj);
  }
 
  //when app mounts get the user profile, check if mongo has a copy of it and if not copy id and name to mongo
@@ -153,27 +166,43 @@ handleRecipeGen(id) {
 
    //  console.log(this.state.recipe);
    var isLoading = this.state.spinner;
-  //  console.log('spinner is on: ', isLoading)
+   var pickOption = this.state.pickOption;
    return (
      <MuiThemeProvider>
        <div>
          { isLoading && (
-           <div style={style.spinner}>
-             <center>
-               <h2>Loading...</h2>
-             </center>
-           </div>
+               <Spinner />
          )}
          <Header />
          <Login history={this.props.history} auth={this.props.auth}/>
-         <div className="recipeGenerator">
-           <Recipe style={style.inspRecipe} recipe={ this.state.recipe }/>
-           {/* <Generator user={this.state.user} history={this.props.history} recipe={ this.state.recipe } onRecGen={ this.handleRecipeGen } /> */}
-         </div>
-         <div style={style.generator}>
-           <Generator user={this.state.user} history={this.props.history} recipe={ this.state.recipe } onRecGen={ this.handleRecipeGen } />
-         </div>
-         <div style={style.blankFooter}></div>
+         { !pickOption && (
+           <div>
+             <div className="recipeGenerator">
+               <Recipe style={style.inspRecipe} recipe={ this.state.recipe }/>
+               {/* <Generator user={this.state.user} history={this.props.history} recipe={ this.state.recipe } onRecGen={ this.handleRecipeGen } /> */}
+             </div>
+             <div style={style.generator}>
+               <Generator user={this.state.user} history={this.props.history} recipe={ this.state.recipe } onRecGen={ this.handleRecipeGen } />
+             </div>
+             <div style={style.blankFooter}></div>
+           </div>
+         )}
+         { pickOption && (
+           <div>
+             <a href="#">
+               <div id="optionIngredients" onClick={this.goTo.bind(this, 'ingredients')}>
+                 <p>CLEAR MY FRIDGE</p>
+                 <small>Will provide ideas based on given ingredients</small>
+               </div>
+             </a>
+             <a href="#">
+               <div id="optionRandom" onClick={this.generateId}>
+                 <p>I'M FEELING ADVENTUROUS</p>
+                 <small>Will provide totally random ideas! <p>There are gems out there!  ...and some not so much</p></small>
+               </div>
+             </a>
+           </div>
+          )}
        </div>
      </MuiThemeProvider>
    )

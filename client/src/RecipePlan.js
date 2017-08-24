@@ -235,7 +235,7 @@ class RecipePlan extends Component {
           return (
             <div key={ friend.favFriendId }>
               <div id="ingRow" style={style.ingRow}>
-                  <div id="cartIcon"><FontIcon className="material-icons">tag_faces</FontIcon></div>
+                  <div id="cartIcon"><FontIcon className="material-icons md-light">tag_faces</FontIcon></div>
                   <div style={style.ingLine}>
                     {friend.favName}
                   </div>
@@ -288,17 +288,15 @@ class RecipePlan extends Component {
                 <h1> { recipeTitle } </h1>
                 <img style={style.recipeImage} src={ recipeImage } alt="Recipe"></img>
                 <p style={style.recipeDesc}> {description}</p>
-              </div>
-              <div style={style.directions}>
                 <a href={directions} target="blank" style={style.directions}><h2>Click here to read instructions</h2></a>
               </div>
               {friendlist && (
-                  <Paper style={style.profileRecOwn}>
-                    <List style={style.recipeIngredients}>
-                      <h2><FontIcon className="material-icons md-dark">content_paste</FontIcon> Friends Also On This Recipe</h2>
+                  <div style={style.profileRecOwn}>
+                    <div style={style.recipeIngredients}>
+                      <h2><FontIcon className="material-icons md-light">content_paste</FontIcon> Friends Also On This Recipe</h2>
                       { friendlist }
-                    </List>
-                  </Paper>
+                    </div>
+                  </div>
                 )}
               <Paper style={style.profileRecOwn}>
                 <List style={style.recipeIngredients}>
